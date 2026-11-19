@@ -30,11 +30,11 @@ variable "MISE_VERSION" {
 
 variable "BUN_IMAGE" {
   // renovate: datasource=docker depName=oven/bun
-  default = "docker.io/oven/bun:1.3-debian"
+  default = "docker.io/oven/bun:1.4.4-debian"
 }
 
 variable "BUN_DIGEST" {
-  default = "sha256:9dba1a1b43ce28c9d7931bfc4eb00feb63b0114720a0277a8f939ae4dfc9db6f"
+  default = "sha256:93d5032fe06d163427822dc1598f420363759bb18155c9cc90eb1be05a64a19e"
 }
 
 variable "SOURCE" {
