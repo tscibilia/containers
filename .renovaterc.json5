@@ -25,31 +25,6 @@
     },
   ],
   customDatasources: {
-    qbittorrent: {
-      defaultRegistryUrlTemplate: "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": qbittorrent}]}'],
-    },
-    "servarr-develop": {
-      defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/develop/changes?os=linux&runtime=netcore",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
-    },
-    "servarr-nightly": {
-      defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/nightly/changes?os=linux&runtime=netcore",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
-    },
-    "sonarr-develop": {
-      defaultRegistryUrlTemplate: "https://services.sonarr.tv/v1/update/develop/changes?os=linux&runtime=netcore&version=5.0",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
-    },
-    plex: {
-      defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": computer.Linux.version}]}'],
-    },
     akeyless: {
       defaultRegistryUrlTemplate: "https://akeyless-cli.s3.us-east-2.amazonaws.com/cli/latest/version",
       format: "plain",
@@ -71,6 +46,7 @@
       description: ["Auto-merge App Updates"],
       matchFileNames: ["**/docker-bake.hcl"],
       automerge: true,
+      automergeType: "pr",
       ignoreTests: false,
     },
     {
@@ -130,72 +106,6 @@
       matchFileNames: ["apps/**"],
       prHourlyLimit: 0,
       prPriority: -1,
-    },
-    {
-      description: ["Auto-merge esphome-device-builder Updates"],
-      matchDepNames: ["esphome-device-builder"],
-      automerge: true,
-      ignoreTests: false,
-    },
-    {
-      description: ["Auto-merge OpenTofu Updates"],
-      matchDepNames: ["opentofu/opentofu"],
-      automerge: true,
-      ignoreTests: false,
-    },
-    {
-      description: ["Allowed Ubuntu Version for Base Images"],
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/ubuntu/"],
-      allowedVersions: "/26\\.04/",
-    },
-    {
-      description: ["Allowed Alpine Version for Base Images"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/alpine/"],
-      allowedVersions: "/3\\.24/",
-    },
-    {
-      description: ["Allowed Alpine Version for Postgres Base Images"],
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/postgres/"],
-      allowedVersions: "/alpine3\\.24/",
-    },
-    {
-      description: ["Allowed Python Version for Alpine Base Images"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.14-alpine3\\.24/",
-    },
-    {
-      description: ["Allowed Python Version for Debian Base Images"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.14-slim/",
-    },
-    {
-      description: ["Allowed Node Version for Alpine Base Images"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/node/"],
-      allowedVersions: "/26-alpine3\\.24/",
-    },
-    {
-      description: ["Allowed Node Version for Debian Base Images"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/node/"],
-      allowedVersions: "/26-trixie-slim/",
-    },
-    {
-      description: ["Allowed Java Version for NZBHydra2 Base Image"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["apps/nzbhydra2/Dockerfile"],
-      matchPackageNames: ["/amazoncorretto/"],
-      allowedVersions: "/17-alpine3\\.24/",
     },
   ],
 }
