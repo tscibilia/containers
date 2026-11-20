@@ -35,7 +35,7 @@ variable "BUN_VERSION" {
 
 variable "PI_MEMINI_VERSION" {
   // renovate: datasource=npm depName=@eleboucher/pi-memini
-  default = "0.7.32"
+  default = "0.7.39"
 }
 
 variable "SOURCE" {
