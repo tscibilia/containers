@@ -30,7 +30,7 @@ variable "BUN_IMAGE" {
 
 variable "BUN_VERSION" {
   // renovate: datasource=docker depName=oven/bun versioning=docker
-  default = "1.4.4-debian"
+  default = "1.4.5-debian"
 }
 
 variable "PI_MEMINI_VERSION" {
