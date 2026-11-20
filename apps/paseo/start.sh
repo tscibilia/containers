@@ -22,7 +22,24 @@ mkdir -p \
   "${HOME}/.local/share" \
   /workspace/worktrees
 
-install -m 600 /etc/paseo/paseo.json "${PASEO_HOME}/config.json"
+# The daemon records UI-installed plugins in config.json, which the PVC keeps
+# but the GitOps file does not declare. Carry those two keys over so a restart
+# keeps plugins on; a key declared in /etc/paseo/paseo.json still wins. A
+# corrupt live file falls back to the plain install instead of blocking boot.
+if [[ -f "${PASEO_HOME}/config.json" ]] && jq -e . "${PASEO_HOME}/config.json" >/dev/null 2>&1; then
+  jq -s '
+    .[0] as $gitops
+    | .[1] as $live
+    | $gitops + (
+        { pluginsEnabled: $live.pluginsEnabled, plugins: $live.plugins }
+        | with_entries(select(.value != null))
+        | with_entries(select($gitops[.key] == null))
+      )
+  ' /etc/paseo/paseo.json "${PASEO_HOME}/config.json" > "${PASEO_HOME}/config.json.next"
+  mv -f "${PASEO_HOME}/config.json.next" "${PASEO_HOME}/config.json"
+else
+  install -m 600 /etc/paseo/paseo.json "${PASEO_HOME}/config.json"
+fi
 install -m 600 /etc/paseo/opencode.json "${OPENCODE_CONFIG_DIR}/opencode.json"
 install -m 600 /etc/paseo/omp-config.yml "${OMP_CONFIG_DIR}/config.yml"
 install -m 600 /etc/paseo/omp-models.yml "${OMP_CONFIG_DIR}/models.yml"
