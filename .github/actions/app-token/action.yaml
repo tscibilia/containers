@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+name: App Token
+description: Mint a GitHub App token from aKeyless via OIDC
+
+outputs:
+  token:
+    description: GitHub App token
+    value: ${{ steps.app-token.outputs.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Load Secrets
+      id: load-secrets
+      uses: akeyless-community/akeyless-github-action@5f299cc482e687930e0cd514d0147ebb36de09f5 # v1.3.0
+      with:
+        access-id: ${{ vars.AKEYLESS_ACCESS_ID }}
+        access-type: jwt
+        static-secrets: |
+          - name: "/kubernetes/actions-runner"
+            output-name: "BOT_APP_ID"
+            key: "ACTIONS_RUNNER_APP_ID"
+          - name: "/kubernetes/actions-runner"
+            output-name: "BOT_APP_PRIVATE_KEY"
+            key: "ACTIONS_RUNNER_PRIVATE_KEY"
+
+    - name: Generate Token
+      id: app-token
+      uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+      with:
+        client-id: ${{ steps.load-secrets.outputs.BOT_APP_ID }}
+        private-key: ${{ steps.load-secrets.outputs.BOT_APP_PRIVATE_KEY }}
+        permission-contents: write
+        permission-pull-requests: write
