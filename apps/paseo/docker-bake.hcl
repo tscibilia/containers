@@ -9,10 +9,6 @@ variable "VERSION" {
   default = "0.16.2"
 }
 
-variable "PASEO_DIGEST" {
-  default = "sha256:44e9f10a192478e4906b37dbf097f555d48e9683194797f80a4f4bb132409a9a"
-}
-
 variable "OPENCODE_VERSION" {
   // renovate: datasource=npm depName=opencode-ai
   default = "1.18.28"
@@ -29,12 +25,17 @@ variable "MISE_VERSION" {
 }
 
 variable "BUN_IMAGE" {
-  // renovate: datasource=docker depName=oven/bun
-  default = "docker.io/oven/bun:1.4.4-debian"
+  default = "docker.io/oven/bun"
 }
 
-variable "BUN_DIGEST" {
-  default = "sha256:93d5032fe06d163427822dc1598f420363759bb18155c9cc90eb1be05a64a19e"
+variable "BUN_VERSION" {
+  // renovate: datasource=docker depName=oven/bun versioning=docker
+  default = "1.4.4-debian"
+}
+
+variable "PI_MEMINI_VERSION" {
+  // renovate: datasource=npm depName=@eleboucher/pi-memini
+  default = "0.7.32"
 }
 
 variable "SOURCE" {
@@ -48,13 +49,13 @@ group "default" {
 target "image" {
   inherits = ["docker-metadata-action"]
   args = {
-    VERSION          = "${VERSION}"
-    PASEO_DIGEST     = "${PASEO_DIGEST}"
-    OPENCODE_VERSION = "${OPENCODE_VERSION}"
-    OMP_VERSION      = "${OMP_VERSION}"
-    MISE_VERSION     = "${MISE_VERSION}"
-    BUN_IMAGE        = "${BUN_IMAGE}"
-    BUN_DIGEST       = "${BUN_DIGEST}"
+    VERSION           = "${VERSION}"
+    OPENCODE_VERSION  = "${OPENCODE_VERSION}"
+    OMP_VERSION       = "${OMP_VERSION}"
+    MISE_VERSION      = "${MISE_VERSION}"
+    BUN_IMAGE         = "${BUN_IMAGE}"
+    BUN_VERSION       = "${BUN_VERSION}"
+    PI_MEMINI_VERSION = "${PI_MEMINI_VERSION}"
   }
   labels = {
     "org.opencontainers.image.source" = "${SOURCE}"

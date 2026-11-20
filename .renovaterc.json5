@@ -50,6 +50,11 @@
       format: "json",
       transformTemplates: ['{"releases":[{"version": computer.Linux.version}]}'],
     },
+    akeyless: {
+      defaultRegistryUrlTemplate: "https://akeyless-cli.s3.us-east-2.amazonaws.com/cli/latest/version",
+      format: "plain",
+      transformTemplates: [],
+    },
   },
   packageRules: [
     {
@@ -67,6 +72,49 @@
       matchFileNames: ["**/docker-bake.hcl"],
       automerge: true,
       ignoreTests: false,
+    },
+    {
+      description: ["Wait for aqua tags to settle before alerting"],
+      matchDatasources: ["github-tags"],
+      matchManagers: ["mise"],
+      matchDepNames: ["/^aqua:/"],
+      minimumReleaseAge: "3 days",
+    },
+    {
+      description: ["Resolve aqua tools from GitHub releases, not tags"],
+      matchDatasources: ["github-tags"],
+      matchManagers: ["mise"],
+      matchDepNames: [
+        "aqua:cilium/cilium-cli",
+        "aqua:cli/cli",
+        "aqua:fluxcd/flux2",
+        "aqua:helmfile/helmfile",
+        "aqua:mitsuhiko/minijinja",
+      ],
+      overrideDatasource: "github-releases",
+    },
+    {
+      description: ["Wait for python-build-standalone to ship the prebuilt CPython"],
+      matchManagers: ["mise"],
+      matchDepNames: ["python"],
+      minimumReleaseAge: "28 days",
+    },
+    {
+      description: ["Normalize mise github package names"],
+      matchFileNames: ["**/mise.toml", ".mise/config.toml"],
+      matchDatasources: ["github-releases", "github-tags"],
+      overridePackageName: "{{#if (lookup (split packageName '/') 1)}}{{packageName}}{{else if (lookup (split packageName ':') 1)}}{{ lookup (split packageName ':') 1 }}/{{ lookup (split packageName ':') 1 }}{{else}}{{packageName}}/{{packageName}}{{/if}}",
+    },
+    {
+      description: ["Bun Debian variant only"],
+      matchDatasources: ["docker"],
+      matchPackageNames: ["oven/bun"],
+      allowedVersions: "/-debian$/",
+    },
+    {
+      description: ["npm app deps: wait one day"],
+      matchDatasources: ["npm"],
+      minimumReleaseAge: "1 day",
     },
     {
       description: [

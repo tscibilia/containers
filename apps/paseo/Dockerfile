@@ -1,16 +1,18 @@
 # syntax=docker/dockerfile:1
-ARG VERSION=0.16.2
-ARG PASEO_DIGEST=sha256:44e9f10a192478e4906b37dbf097f555d48e9683194797f80a4f4bb132409a9a
-ARG BUN_IMAGE=docker.io/oven/bun:1.4.4-debian
-ARG BUN_DIGEST=sha256:93d5032fe06d163427822dc1598f420363759bb18155c9cc90eb1be05a64a19e
-FROM ${BUN_IMAGE}@${BUN_DIGEST} AS bun
+ARG VERSION
+ARG BUN_IMAGE
+ARG BUN_VERSION
+FROM ${BUN_IMAGE}:${BUN_VERSION} AS bun
 
-FROM ghcr.io/getpaseo/paseo:${VERSION}@${PASEO_DIGEST}
+FROM ghcr.io/getpaseo/paseo:${VERSION}
 
 ARG VERSION
-ARG OPENCODE_VERSION=1.18.28
-ARG OMP_VERSION=18.22.2
-ARG MISE_VERSION=v2026.11.9
+ARG OPENCODE_VERSION
+ARG OMP_VERSION
+ARG MISE_VERSION
+ARG PI_MEMINI_VERSION
+# renovate: datasource=custom.akeyless depName=akeyless-cli
+ARG AKEYLESS_VERSION=1.156.0
 ARG TARGETARCH
 
 USER root
@@ -56,6 +58,21 @@ RUN case "${TARGETARCH}" in \
     && install /tmp/mise/bin/mise /usr/local/bin/mise \
     && rm -rf /tmp/mise /tmp/mise.tar.xz
 
+RUN case "${TARGETARCH}" in \
+      'amd64') AKEYLESS_ARCH='amd64' ;; \
+      'arm64') AKEYLESS_ARCH='arm64' ;; \
+      *) echo "unsupported arch ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && curl -fsSL "https://akeyless-cli.s3.us-east-2.amazonaws.com/cli/${AKEYLESS_VERSION}/cli-linux-${AKEYLESS_ARCH}" -o /usr/local/bin/akeyless \
+    && chmod 0755 /usr/local/bin/akeyless \
+    && mkdir -p /home/paseo/.akeyless/profiles \
+    && printf 'dns="vault.akeyless.io"\nprotocol="https"\n' > /home/paseo/.akeyless/settings \
+    && printf '["default"]\n  access_type = "access_key"\n  access_id = ""\n  access_key = ""\n' > /home/paseo/.akeyless/profiles/default.toml \
+    && chmod 700 /home/paseo/.akeyless /home/paseo/.akeyless/profiles \
+    && chmod 600 /home/paseo/.akeyless/settings /home/paseo/.akeyless/profiles/default.toml \
+    && chown -R 1000:1000 /home/paseo/.akeyless \
+    && gosu paseo akeyless --version
+
 ENV BUN_INSTALL=/opt/bun \
     HOME=/home/paseo \
     PASEO_HOME=/home/paseo/.paseo
@@ -80,12 +97,13 @@ RUN mkdir -p /opt/mise /tmp/mise-cache /tmp/mise-state /etc/mise \
     && mise install \
     && mise reshim \
     && for bin in \
-         actionlint age cilium flate flux gh go gofmt gum helm helmfile jq just \
-         kopiur kubectl kustomize lefthook minijinja-cli node npm npx oxfmt pip \
+         actionlint age ansible ansible-galaxy ansible-playbook cilium flate flux gh go gofmt gum helm helmfile jq just \
+         kopiur kubectl kubectl-browse-pvc kustomize lefthook minijinja-cli node npm npx oxfmt pip \
          pip3 pnpm python python3 rg shellcheck sops talosctl uv yamlls yq zizmor; do \
          path="$(mise which "$bin" 2>/dev/null)" || continue; \
          ln -sf "$path" "/opt/mise/shims/$bin"; \
        done \
+    && ln -sf "$(mise which kopiur)" /opt/mise/shims/kubectl-kopiur \
     && kubectl version --client \
     && flux version --client \
     && kustomize version \
@@ -97,7 +115,7 @@ ENV MISE_DATA_DIR=/home/paseo/.local/share/mise \
 
 ENV HOME=/opt/omp-home
 RUN mkdir -p /opt/omp-home \
-    && omp plugin install "@eleboucher/pi-memini@0.7.32" \
+    && omp plugin install "@eleboucher/pi-memini@${PI_MEMINI_VERSION}" \
     && omp plugin list | grep -q "pi-memini" \
     && mkdir -p /opt/omp-plugins \
     && cp -a /opt/omp-home/.omp/plugins/. /opt/omp-plugins/ \
