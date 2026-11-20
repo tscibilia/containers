@@ -11,7 +11,7 @@ variable "VERSION" {
 
 variable "OPENCODE_VERSION" {
   // renovate: datasource=npm depName=opencode-ai
-  default = "1.18.28"
+  default = "1.19.6"
 }
 
 variable "OMP_VERSION" {
