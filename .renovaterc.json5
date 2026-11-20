@@ -74,6 +74,13 @@
       ignoreTests: false,
     },
     {
+      description: ["Group paseo dependencies into one PR"],
+      matchFileNames: ["apps/paseo/**"],
+      groupName: "paseo",
+      groupSlug: "paseo",
+      additionalBranchPrefix: "",
+    },
+    {
       description: ["Wait for aqua tags to settle before alerting"],
       matchDatasources: ["github-tags"],
       matchManagers: ["mise"],
