@@ -11,6 +11,8 @@ func Test(t *testing.T) {
 
 	helpers.RequireFileExists(t, image, "/usr/local/bin/paseo-start")
 	helpers.RequireFileExists(t, image, "/opt/omp-plugins/omp-plugins.lock.json")
+	helpers.RequireFileExists(t, image, "/opt/omp/RULES.md")
+	helpers.RequireFileExists(t, image, "/opt/omp/hooks/pre/secret-guard.ts")
 	helpers.RequireCommandSucceeds(t, image, nil, "/usr/local/bin/paseo", "--version")
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/bun/bin/omp", "--version")
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/bun/bin/opencode", "--version")
