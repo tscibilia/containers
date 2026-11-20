@@ -11,7 +11,7 @@ variable "VERSION" {
 
 variable "OPENCODE_VERSION" {
   // renovate: datasource=npm depName=opencode-ai
-  default = "1.18.28"
+  default = "1.19.6"
 }
 
 variable "OMP_VERSION" {
@@ -21,7 +21,7 @@ variable "OMP_VERSION" {
 
 variable "MISE_VERSION" {
   // renovate: datasource=github-releases depName=jdx/mise
-  default = "v2026.11.9"
+  default = "v2026.11.11"
 }
 
 variable "BUN_IMAGE" {
@@ -30,12 +30,12 @@ variable "BUN_IMAGE" {
 
 variable "BUN_VERSION" {
   // renovate: datasource=docker depName=oven/bun versioning=docker
-  default = "1.4.4-debian"
+  default = "1.4.5-debian"
 }
 
 variable "PI_MEMINI_VERSION" {
   // renovate: datasource=npm depName=@eleboucher/pi-memini
-  default = "0.7.32"
+  default = "0.7.39"
 }
 
 variable "SOURCE" {
