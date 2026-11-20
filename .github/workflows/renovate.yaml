@@ -1,0 +1,93 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Renovate
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - .renovaterc.json5
+      - .renovate/**.json5
+  schedule:
+    - cron: 0 */12 * * *
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: Dry Run
+        type: boolean
+        default: false
+        required: true
+      logLevel:
+        description: Log Level
+        type: choice
+        default: debug
+        options:
+          - debug
+          - info
+        required: true
+      version:
+        description: Renovate Version
+        default: latest
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  main:
+    name: Renovate
+    runs-on: ubuntu-26.04
+    permissions:
+      id-token: write # GitHub OIDC token, consumed by the aKeyless jwt auth method
+      packages: read
+    steps:
+      - name: Load Secrets
+        id: load-secrets
+        uses: akeyless-community/akeyless-github-action@5f299cc482e687930e0cd514d0147ebb36de09f5 # v1.3.0
+        with:
+          access-id: ${{ vars.AKEYLESS_ACCESS_ID }}
+          access-type: jwt
+          static-secrets: |
+            - name: "/kubernetes/actions-runner"
+              output-name: "BOT_APP_ID"
+              key: "ACTIONS_RUNNER_APP_ID"
+            - name: "/kubernetes/actions-runner"
+              output-name: "BOT_APP_PRIVATE_KEY"
+              key: "ACTIONS_RUNNER_PRIVATE_KEY"
+
+      - name: Generate Token
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        id: app-token
+        with:
+          client-id: ${{ steps.load-secrets.outputs.BOT_APP_ID }}
+          private-key: ${{ steps.load-secrets.outputs.BOT_APP_PRIVATE_KEY }}
+          permission-checks: write
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+          permission-statuses: write
+          permission-workflows: write
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@acdd6bda8b035c99ce59d5675816af2aa65a1774 # v46.3.14
+        env:
+          LOG_LEVEL: ${{ inputs.logLevel || 'debug' }}
+          RENOVATE_AUTODISCOVER: true
+          RENOVATE_AUTODISCOVER_FILTER: ${{ github.repository }}
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun }}
+          RENOVATE_INTERNAL_CHECKS_FILTER: strict
+          RENOVATE_PLATFORM: github
+          RENOVATE_PLATFORM_COMMIT: true
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          renovate-version: ${{ inputs.version || 'latest' }}

@@ -26,4 +26,9 @@ func Test(t *testing.T) {
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/pnpm", "--version")
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/python", "--version")
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/go", "version")
+	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/minijinja-cli", "--version")
+	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/ansible-playbook", "--version")
+	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/kubectl-browse-pvc", "--version")
+	helpers.RequireCommandSucceeds(t, image, nil, "/opt/mise/shims/kubectl-kopiur", "--version")
+	helpers.RequireCommandSucceeds(t, image, nil, "/usr/local/bin/akeyless", "--version")
 }
