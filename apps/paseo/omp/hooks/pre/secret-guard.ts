@@ -189,7 +189,15 @@ function environmentSecret(line: string): string | null {
 
 const TEXT_PATTERNS: Array<[RegExp, string]> = [
   [new RegExp(`^(?:${READ_CMDS})\\b[^\\n]*${CREDENTIAL_PATH}`, "i"), "reads a credential file"],
-  [/^kubectl\b[^\n]*\b(?:exec|cp)\b/, "kubectl exec/cp can read pod credentials"],
+  [/^kubectl\b[^\n]*\bcp\b/, "kubectl cp can read pod credentials"],
+  [
+    /^kubectl\b[^\n]*\bexec\b[^\n]*--\s*(?:env|printenv|export|cat|less|more|head|tail|strings|od|xxd|base64|sh|bash|zsh|fish|python|python3|node|perl|ruby)\b/,
+    "kubectl exec runs a command that can read pod credentials",
+  ],
+  [
+    /^kubectl\b[^\n]*\bexec\b[^\n]*(?:\/etc\/paseo|\/var\/run\/secrets|\.env|kubeconfig|talosconfig|signing_key)/,
+    "kubectl exec targets a credential path",
+  ],
   [/^gh\s+secret\b/i, "touches GitHub Actions secrets"],
   [/^gh\s+auth\s+token\b/i, "prints the GitHub token"],
   [/^gh\s+api\b[^\n]*\/secrets\b/i, "reads GitHub secrets through the API"],

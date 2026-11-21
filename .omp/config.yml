@@ -7,10 +7,20 @@ tools:
 bash:
   # Ordered, first match wins; project rules are evaluated before the host rules.
   patterns:
+    - match: "git push --force* main*"
+      approval: deny
+    - match: "git push -f* main*"
+      approval: deny
+    - match: "git push* main* --force*"
+      approval: deny
+    - match: "git push* +main*"
+      approval: deny
+    - match: "git push --force-with-lease*"
+      approval: allow
     - match: "git push --force*"
-      approval: deny
+      approval: allow
     - match: "git push -f*"
-      approval: deny
+      approval: allow
     - match: "git add*"
       approval: allow
     - match: "git commit*"
