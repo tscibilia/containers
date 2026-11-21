@@ -45,6 +45,16 @@ install -m 600 /etc/paseo/omp-config.yml "${OMP_CONFIG_DIR}/config.yml"
 install -m 600 /etc/paseo/omp-models.yml "${OMP_CONFIG_DIR}/models.yml"
 install -m 600 /etc/paseo/signing_key "${HOME}/.ssh/paseo_signing"
 
+# Host-wide OMP policy: a sticky rule and the secret guard hook. They live in
+# the image, not /etc/paseo, because they are host policy rather than app
+# configuration; the PVC only holds the writable copy. Overwrite each start so
+# the image stays the source of truth.
+if [ -d /opt/omp ]; then
+  install -d -m 700 "${OMP_CONFIG_DIR}/hooks/pre"
+  install -m 600 /opt/omp/RULES.md "${OMP_CONFIG_DIR}/RULES.md"
+  install -m 600 /opt/omp/hooks/pre/secret-guard.ts "${OMP_CONFIG_DIR}/hooks/pre/secret-guard.ts"
+fi
+
 # The image's /home/paseo is hidden by the PVC. Seed a profile so the CLI never
 # starts its interactive first-use wizard.
 if [[ ! -f "${HOME}/.akeyless/settings" ]]; then
