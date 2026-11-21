@@ -125,6 +125,8 @@ ENV HOME=/home/paseo
 USER root
 COPY omp /opt/omp
 RUN chown -R 1000:1000 /opt/omp
+COPY opencode /opt/opencode
+RUN chown -R 1000:1000 /opt/opencode
 COPY start.sh /usr/local/bin/paseo-start
 RUN chmod 0755 /usr/local/bin/paseo-start \
     && chown -R 1000:1000 /home/paseo

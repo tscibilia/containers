@@ -46,14 +46,19 @@ install -m 600 /etc/paseo/omp-models.yml "${OMP_CONFIG_DIR}/models.yml"
 install -m 600 /etc/paseo/signing_key "${HOME}/.ssh/paseo_signing"
 
 # Host-wide agent policy: one rules file for OMP and OpenCode, plus the OMP
-# secret guard hook. They live in the image, not /etc/paseo, because they are
-# host policy rather than app configuration; the PVC only holds the writable
-# copy. Overwrite each start so the image stays the source of truth.
+# secret guard hook and the OpenCode plugin that reuses it. They live in the
+# image, not /etc/paseo, because they are host policy rather than app
+# configuration; the PVC only holds the writable copy. Overwrite each start so
+# the image stays the source of truth.
 if [ -d /opt/omp ]; then
   install -d -m 700 "${OMP_CONFIG_DIR}/hooks/pre"
   install -m 600 /opt/omp/RULES.md "${OMP_CONFIG_DIR}/RULES.md"
   install -m 600 /opt/omp/RULES.md "${OPENCODE_CONFIG_DIR}/AGENTS.md"
   install -m 600 /opt/omp/hooks/pre/secret-guard.ts "${OMP_CONFIG_DIR}/hooks/pre/secret-guard.ts"
+fi
+if [ -d /opt/opencode ]; then
+  install -d -m 700 "${OPENCODE_CONFIG_DIR}/plugin"
+  install -m 600 /opt/opencode/plugin/secret-guard.ts "${OPENCODE_CONFIG_DIR}/plugin/secret-guard.ts"
 fi
 
 # The image's /home/paseo is hidden by the PVC. Seed a profile so the CLI never

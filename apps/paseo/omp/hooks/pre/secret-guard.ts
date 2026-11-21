@@ -69,6 +69,17 @@ const PUBLIC_SSH: Record<string, true> = {
 };
 const PUBLIC_SA: Record<string, true> = { "ca.crt": true, namespace: true };
 
+const ENV_EXAMPLE = /(?:^|\.)env\.(?:example|sample|template|dist)$/i;
+
+/** Files whose contents are credentials, wherever they live. */
+function credentialBasenameReason(path: string): string | null {
+  const base = path.split("/").pop() ?? "";
+  if (!base || ENV_EXAMPLE.test(base)) return null;
+  if (/(?:^|\.)env(?:rc)?(?:\..+)?$/i.test(base)) return "reads a credential file";
+  if (/\.(?:sqlite|db|key|pem)$/i.test(base)) return "reads a credential file";
+  return null;
+}
+
 // Commands that can put a file's contents into output or into another file.
 const READ_CMDS =
   "cat|less|more|head|tail|strings|od|xxd|base64|jq|grep|rg|awk|sed|cp|mv|scp|rsync|tar|zip|ln|install|python|python3|node|bun|bash|sh|zsh|fish|dd|openssl|ssh-keygen|read|source";
@@ -284,6 +295,8 @@ export function pathAccess(toolName: string, raw: string): string | null {
     return "edits the secret guard";
   }
   if (CREDENTIAL_FILES.some((file) => path === file)) return "reads a credential file";
+  const basename = credentialBasenameReason(path);
+  if (basename) return basename;
   const inside = credentialDirReason(path);
   if (inside) return inside;
   if (

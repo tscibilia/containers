@@ -101,6 +101,15 @@ const paths: Array<[string, string, boolean]> = [
   ["write", "/home/paseo/.omp/agent/hooks/pre/secret-guard.ts", true],
   ["read", "/home/paseo/.omp/agent/hooks/pre/secret-guard.ts", false],
   ["read", "/home/paseo/.paseo/config.json", false],
+  ["read", "/tmp/app.env", true],
+  ["read", "/tmp/app.env.local", true],
+  ["read", "/tmp/app.envrc", true],
+  ["read", "/tmp/app.env.example", false],
+  ["read", "/tmp/app.sqlite", true],
+  ["read", "/tmp/app.db", true],
+  ["read", "/tmp/key.pem", true],
+  ["read", "/tmp/key.key", true],
+  ["edit", "/tmp/app.env", true],
 ];
 
 describe("bash and eval", () => {
