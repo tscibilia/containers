@@ -191,7 +191,7 @@ const TEXT_PATTERNS: Array<[RegExp, string]> = [
   [new RegExp(`^(?:${READ_CMDS})\\b[^\\n]*${CREDENTIAL_PATH}`, "i"), "reads a credential file"],
   [/^kubectl\b[^\n]*\bcp\b/, "kubectl cp can read pod credentials"],
   [
-    /^kubectl\b[^\n]*\bexec\b[^\n]*--\s*(?:env|printenv|export|cat|less|more|head|tail|strings|od|xxd|base64|sh|bash|zsh|fish|python|python3|node|perl|ruby)\b/,
+    /^kubectl\b[^\n]*\bexec\b[^\n]*--\s*(?:\S*\/)?(?:env|printenv|export|cat|less|more|head|tail|strings|od|xxd|base64|sh|bash|zsh|fish|python|python3|node|perl|ruby)\b/,
     "kubectl exec runs a command that can read pod credentials",
   ],
   [

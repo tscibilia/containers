@@ -48,6 +48,7 @@ const blocked = [
   "kubectl exec -n ai paseo -- env",
   "kubectl exec -n ai paseo -- cat /etc/paseo/signing_key",
   "kubectl exec -n ai paseo -- sh -c 'echo x'",
+  "kubectl exec -n ai paseo -- /bin/cat /etc/paseo/signing_key",
   "kubectl cp ai/paseo:/etc/paseo/signing_key /tmp/k",
   "akeyless get-secret-value --name /ai/memini",
   "akeyless get-secret-value --name /ai/memini > /tmp/x",
