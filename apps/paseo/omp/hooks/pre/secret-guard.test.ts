@@ -56,6 +56,8 @@ const blocked = [
   "cat .env",
   "source .env",
   "cat ~/.ssh/id_ed25519",
+  "bash -c 'cat ~/.ssh/id_ed25519'",
+  "dd if=/etc/paseo/signing_key",
   "cat ~/.kube/config",
   "cat ~/.config/gh/hosts.yml",
   "cat ~/.akeyless/profiles/default.toml",

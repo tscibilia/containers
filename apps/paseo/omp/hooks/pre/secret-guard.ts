@@ -71,7 +71,7 @@ const PUBLIC_SA: Record<string, true> = { "ca.crt": true, namespace: true };
 
 // Commands that can put a file's contents into output or into another file.
 const READ_CMDS =
-  "cat|less|more|head|tail|strings|od|xxd|base64|jq|grep|rg|awk|sed|cp|mv|scp|rsync|tar|zip|ln|install|python|python3|node|bun|read|source";
+  "cat|less|more|head|tail|strings|od|xxd|base64|jq|grep|rg|awk|sed|cp|mv|scp|rsync|tar|zip|ln|install|python|python3|node|bun|bash|sh|zsh|fish|dd|openssl|ssh-keygen|read|source";
 
 const CREDENTIAL_PATH =
   "(?:\\/etc\\/paseo\\/(?:signing_key|talosconfig)" +
