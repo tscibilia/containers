@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=docker depName=ghcr.io/getpaseo/paseo
-  default = "0.16.2"
+  default = "0.17.0"
 }
 
 variable "OPENCODE_VERSION" {
@@ -21,7 +21,7 @@ variable "OMP_VERSION" {
 
 variable "MISE_VERSION" {
   // renovate: datasource=github-releases depName=jdx/mise
-  default = "v2026.11.11"
+  default = "v2026.11.12"
 }
 
 variable "BUN_IMAGE" {
