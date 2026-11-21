@@ -1,17 +1,26 @@
-# Project scope only. The host guard in ~/.omp/agent/config.yml and the
-# secret-guard hook (hooks/pre/secret-guard.ts) stay in force: the hook stops
-# bash/eval calls that touch secret material, and tools.restrictedFolders is
-# host-only by design. Evals themselves are not prompted.
+# Project scope only. The host guard in ~/.omp/agent/config.yml, the host
+# RULES.md, and the secret-guard hook stay in force. Evals themselves are not
+# prompted.
 tools:
   approval:
     web_search: allow
 bash:
   # Ordered, first match wins; project rules are evaluated before the host rules.
   patterns:
+    - match: "git push --force* main*"
+      approval: deny
+    - match: "git push -f* main*"
+      approval: deny
+    - match: "git push* main* --force*"
+      approval: deny
+    - match: "git push* +main*"
+      approval: deny
+    - match: "git push --force-with-lease*"
+      approval: allow
     - match: "git push --force*"
-      approval: prompt
+      approval: allow
     - match: "git push -f*"
-      approval: prompt
+      approval: allow
     - match: "git add*"
       approval: allow
     - match: "git commit*"
@@ -23,4 +32,6 @@ bash:
     - match: "git checkout -b*"
       approval: allow
     - match: "gh pr create*"
+      approval: allow
+    - match: "mise *"
       approval: allow
