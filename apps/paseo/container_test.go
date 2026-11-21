@@ -14,7 +14,7 @@ func Test(t *testing.T) {
 	helpers.RequireFileExists(t, image, "/opt/omp/RULES.md")
 	helpers.RequireFileExists(t, image, "/opt/omp/hooks/pre/secret-guard.ts")
 	helpers.RequireFileExists(t, image, "/opt/omp/hooks/pre/secret-guard.test.ts")
-	helpers.RequireCommandSucceeds(t, image, nil, "/opt/bun/bin/bun", "test", "/opt/omp/hooks/pre/secret-guard.test.ts")
+	helpers.RequireCommandSucceeds(t, image, nil, "/usr/local/bin/bun", "test", "/opt/omp/hooks/pre/secret-guard.test.ts")
 	helpers.RequireCommandSucceeds(t, image, nil, "/usr/local/bin/paseo", "--version")
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/bun/bin/omp", "--version")
 	helpers.RequireCommandSucceeds(t, image, nil, "/opt/bun/bin/opencode", "--version")
