@@ -16,7 +16,7 @@ variable "OPENCODE_VERSION" {
 
 variable "OMP_VERSION" {
   // renovate: datasource=npm depName=@oh-my-pi/pi-coding-agent
-  default = "19.0.0"
+  default = "19.0.1"
 }
 
 variable "MISE_VERSION" {
