@@ -1,6 +1,7 @@
-# Project scope only. The host guard in ~/.omp/agent/config.yml stays in force:
-# eval keeps prompting because it runs arbitrary code, which can read past the
-# bash deny list; tools.restrictedFolders is host-only by design.
+# Project scope only. The host guard in ~/.omp/agent/config.yml and the
+# secret-guard hook (hooks/pre/secret-guard.ts) stay in force: the hook stops
+# bash/eval calls that touch secret material, and tools.restrictedFolders is
+# host-only by design. Evals themselves are not prompted.
 tools:
   approval:
     web_search: allow
