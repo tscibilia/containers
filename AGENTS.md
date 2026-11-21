@@ -21,9 +21,10 @@ applies to any AI coding agent working here.
   to follow the format, though matching it is fine. Sign off commits:
   `git commit -s`.
 - Commit and push with `git` and `gh` directly, not an agent's eval-based
-  commit helper: the host policy prompts on every `eval` call, this repo's
-  `.omp/config.yml` pre-approves `git` and `gh`, and the eval helper skips
-  commit signing.
+  commit helper: the helper builds through `commit-tree`, so its commits are
+  unsigned, and this repo's `.omp/config.yml` explicitly pre-approves `git`
+  and `gh`. The host-level `RULES.md` shipped in the paseo image states the
+  same rule.
 - Never `git commit`, `git push`, or open a PR unless asked to. Ask before
   any destructive or hard-to-reverse action instead of defaulting to it.
 - Don't state a library's API from memory: verify against `pkg.go.dev` or
