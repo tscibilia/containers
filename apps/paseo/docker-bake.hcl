@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=docker depName=ghcr.io/getpaseo/paseo
-  default = "0.17.1"
+  default = "0.17.3"
 }
 
 variable "OPENCODE_VERSION" {
@@ -16,7 +16,7 @@ variable "OPENCODE_VERSION" {
 
 variable "OMP_VERSION" {
   // renovate: datasource=npm depName=@oh-my-pi/pi-coding-agent
-  default = "19.0.1"
+  default = "19.1.0"
 }
 
 variable "MISE_VERSION" {
