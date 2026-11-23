@@ -13,8 +13,9 @@ Standalone image build repo for `tscibilia`. The automation is the same shape as
 | `paseo` | `ghcr.io/tscibilia/paseo` | [`getpaseo/paseo`](https://github.com/getpaseo/paseo) |
 
 `paseo` is a child of the upstream daemon image. It adds OMP, OpenCode, Bun,
-Node, Python/uv, Go, mise, akeyless, ansible-core, and the home-ops toolset so
-the in-cluster daemon can run agents and validate repositories.
+Node, Python/uv, Go, mise, akeyless, ansible-core, the home-ops toolset, and
+third-party agent skills (`mattpocock/skills`, `unlazy`) so the in-cluster
+daemon can run agents and validate repositories.
 
 ## Build locally
 
@@ -34,7 +35,7 @@ GitHub App. It reads `.renovaterc.json5` and opens PRs.
 Dependencies covered:
 
 - `docker-bake.hcl`: upstream paseo image, Bun, OpenCode, OMP, pi-memini, mise
-- `Dockerfile`: akeyless CLI
+- `Dockerfile`: akeyless CLI, `mattpocock/skills`, `unlazy`
 - `apps/paseo/mise.toml` and `.mise/config.toml`: all mise tools
 - `go.mod` and GitHub Actions
 
