@@ -13,6 +13,11 @@ ARG MISE_VERSION
 ARG PI_MEMINI_VERSION
 # renovate: datasource=custom.akeyless depName=akeyless-cli
 ARG AKEYLESS_VERSION=1.156.0
+# renovate: datasource=github-tags depName=mattpocock/skills
+ARG MATTPOCOCK_SKILLS_VERSION=v1.3.2
+# The build fetches the pinned commit below, never the moving branch.
+# renovate-unlazy: datasource=github-digest depName=Leonxlnx/unlazy ref=main
+ARG UNLAZY_COMMIT=16671491f6679ad9378f52604d3bc2415b4120c7
 ARG TARGETARCH
 
 USER root
@@ -72,6 +77,28 @@ RUN case "${TARGETARCH}" in \
     && chmod 600 /home/paseo/.akeyless/settings /home/paseo/.akeyless/profiles/default.toml \
     && chown -R 1000:1000 /home/paseo/.akeyless \
     && gosu paseo akeyless --version
+
+# Third-party agent skills, pinned and fetched at build time. They live outside
+# /home/paseo & start.sh copies them into the writable home directory. Flat layout.
+RUN set -eux; \
+    mkdir -p /tmp/skills/mattpocock /tmp/skills/unlazy /opt/agents-skills; \
+    curl -fsSL "https://github.com/mattpocock/skills/archive/refs/tags/${MATTPOCOCK_SKILLS_VERSION}.tar.gz" -o /tmp/mattpocock-skills.tar.gz; \
+    tar -xzf /tmp/mattpocock-skills.tar.gz -C /tmp/skills/mattpocock --strip-components=1; \
+    curl -fsSL "https://github.com/Leonxlnx/unlazy/archive/${UNLAZY_COMMIT}.tar.gz" -o /tmp/unlazy.tar.gz; \
+    tar -xzf /tmp/unlazy.tar.gz -C /tmp/skills/unlazy --strip-components=1; \
+    for dir in /tmp/skills/mattpocock/skills/engineering/*/ /tmp/skills/mattpocock/skills/productivity/*/; do \
+      test -f "${dir}SKILL.md"; \
+      cp -a "${dir}" /opt/agents-skills/; \
+    done; \
+    mkdir -p /opt/agents-skills/unlazy; \
+    cp -a /tmp/skills/unlazy/SKILL.md /tmp/skills/unlazy/agents /tmp/skills/unlazy/scripts /tmp/skills/unlazy/templates /tmp/skills/unlazy/references /opt/agents-skills/unlazy/; \
+    find /opt/agents-skills -type f -print0 > /tmp/skill-files; \
+    LC_ALL=C sort -z -o /tmp/skill-files /tmp/skill-files; \
+    xargs -0 -a /tmp/skill-files sha256sum > /tmp/skill-hashes; \
+    skills_hash="$(sha256sum /tmp/skill-hashes)"; \
+    printf '{"hash":"%s","mattpocock":"%s","unlazy":"%s"}\n' "${skills_hash%% *}" "$MATTPOCOCK_SKILLS_VERSION" "$UNLAZY_COMMIT" > /opt/agents-skills/.lock.json; \
+    rm -rf /tmp/skills /tmp/mattpocock-skills.tar.gz /tmp/unlazy.tar.gz /tmp/skill-files /tmp/skill-hashes; \
+    chown -R 1000:1000 /opt/agents-skills
 
 ENV BUN_INSTALL=/opt/bun \
     HOME=/home/paseo \

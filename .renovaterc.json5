@@ -18,10 +18,19 @@
       description: "Process Annotations in Dockerfiles",
       managerFilePatterns: ["/(^|/)Dockerfile$/"],
       matchStrings: [
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+(:\\s|=)(&\\S+\\s)?(?<currentValue>\\S+)",
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+(:\\s|=)(&\\S+\\s)?(?<currentValue>\\S+)",
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+    },
+    {
+      customType: "regex",
+      description: "Track the unlazy branch digest in Dockerfiles",
+      managerFilePatterns: ["/(^|/)Dockerfile$/"],
+      matchStrings: [
+        "# renovate-unlazy: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) ref=(?<currentValue>\\S+)\\nARG UNLAZY_COMMIT=(?<currentDigest>\\S+)",
+      ],
+      versioningTemplate: "exact",
     },
   ],
   customDatasources: {

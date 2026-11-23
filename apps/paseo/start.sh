@@ -22,10 +22,8 @@ mkdir -p \
   "${HOME}/.local/share" \
   /workspace/worktrees
 
-# The daemon records UI-installed plugins in config.json, which the PVC keeps
-# but the GitOps file does not declare. Carry those two keys over so a restart
-# keeps plugins on; a key declared in /etc/paseo/paseo.json still wins. A
-# corrupt live file falls back to the plain install instead of blocking boot.
+# Merge UI-installed plugin keys from the PVC's config.json into the GitOps
+# copy. Declared keys win; a corrupt live file falls back to the plain install.
 if [[ -f "${PASEO_HOME}/config.json" ]] && jq -e . "${PASEO_HOME}/config.json" >/dev/null 2>&1; then
   jq -s '
     .[0] as $gitops
@@ -45,11 +43,8 @@ install -m 600 /etc/paseo/omp-config.yml "${OMP_CONFIG_DIR}/config.yml"
 install -m 600 /etc/paseo/omp-models.yml "${OMP_CONFIG_DIR}/models.yml"
 install -m 600 /etc/paseo/signing_key "${HOME}/.ssh/paseo_signing"
 
-# Host-wide agent policy: one rules file for OMP and OpenCode, plus the OMP
-# secret guard hook and the OpenCode plugin that reuses it. They live in the
-# image, not /etc/paseo, because they are host policy rather than app
-# configuration; the PVC only holds the writable copy. Overwrite each start so
-# the image stays the source of truth.
+# Reinstall host agent policy from the image: RULES.md for OMP and OpenCode,
+# plus the shared secret-guard hook and plugin.
 if [ -d /opt/omp ]; then
   install -d -m 700 "${OMP_CONFIG_DIR}/hooks/pre"
   install -m 600 /opt/omp/RULES.md "${OMP_CONFIG_DIR}/RULES.md"
@@ -85,14 +80,26 @@ if [[ -n "${AKEYLESS_ACCESS_ID:-}" && -n "${AKEYLESS_ACCESS_KEY:-}" ]]; then
   akeyless configure "${args[@]}" >/dev/null
 fi
 
-# The plugin lives outside /home/paseo in the image because the PVC hides the
-# image's home directory at runtime. Copy it into the writable home so OMP
-# loads the version that ships with this image. The lockfile comparison keeps a
-# 159 MB plugin tree from being recopied on every pod restart.
+# The plugin lives outside the PVC-hidden home; copy it in when the lockfile
+# differs. This avoids recopying a 159 MB tree on every restart.
 if [ -d /opt/omp-plugins ]; then
   if ! cmp -s /opt/omp-plugins/omp-plugins.lock.json "${HOME}/.omp/plugins/omp-plugins.lock.json"; then
     rm -rf "${HOME}/.omp/plugins"
     cp -a /opt/omp-plugins "${HOME}/.omp/plugins"
+  fi
+fi
+
+# Third-party skills also live outside the PVC-hidden home; copy only shipped
+# names when the lockfile differs, leaving Paseo's and the user's skills alone.
+if [ -d /opt/agents-skills ]; then
+  install -d -m 700 "${HOME}/.agents/skills"
+  if ! cmp -s /opt/agents-skills/.lock.json "${HOME}/.agents/skills/.image-lock.json" 2>/dev/null; then
+    for src in /opt/agents-skills/*/; do
+      name="$(basename "${src}")"
+      rm -rf "${HOME}/.agents/skills/${name}"
+      cp -a "${src}" "${HOME}/.agents/skills/${name}"
+    done
+    install -m 600 /opt/agents-skills/.lock.json "${HOME}/.agents/skills/.image-lock.json"
   fi
 fi
 
