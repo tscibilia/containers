@@ -21,7 +21,7 @@ variable "OMP_VERSION" {
 
 variable "MISE_VERSION" {
   // renovate: datasource=github-releases depName=jdx/mise
-  default = "v2026.11.13"
+  default = "v2026.11.14"
 }
 
 variable "BUN_IMAGE" {
