@@ -12,7 +12,7 @@ ARG OMP_VERSION
 ARG MISE_VERSION
 ARG PI_MEMINI_VERSION
 # renovate: datasource=custom.akeyless depName=akeyless-cli
-ARG AKEYLESS_VERSION=1.156.0
+ARG AKEYLESS_VERSION=1.157.0
 # renovate: datasource=github-tags depName=mattpocock/skills
 ARG MATTPOCOCK_SKILLS_VERSION=v1.3.2
 # The build fetches the pinned commit below, never the moving branch.
